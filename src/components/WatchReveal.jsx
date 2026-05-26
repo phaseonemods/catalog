@@ -475,7 +475,7 @@ export default function WatchReveal({
                         height: '100%',
                         // Anchor at 35% — more crop on the left, less on the right.
                         objectFit: 'cover',
-                        objectPosition: '8% center',
+                        objectPosition: '12.5% center',
                         userSelect: 'none',
                         pointerEvents: 'none',
                         opacity: i === l4Idx ? 1 : 0,
