@@ -100,12 +100,54 @@
   .btn.success { background: var(--green); border-color: var(--green); color: var(--bg); }
   .btn.success:hover:not(:disabled) { opacity: 0.85; }
   .btn.sm { padding: 5px 12px; font-size: 0.65rem; }
+  /* ── Split publish button ── */
+  .publish-split { display: flex; position: relative; }
   .btn.publish-btn {
     background: #d40000; border-color: #d40000; color: #fff;
     font-size: 0.78rem; padding: 10px 24px; letter-spacing: 0.18em;
     display: flex; align-items: center; gap: 8px;
+    border-right: none;
   }
   .btn.publish-btn:hover:not(:disabled) { background: #b30000; border-color: #b30000; }
+  .publish-caret {
+    background: #b30000; border: 1px solid #d40000; border-left: 1px solid rgba(255,255,255,0.2); color: #fff;
+    padding: 10px 11px; cursor: pointer; font-size: 0.7rem; display: flex; align-items: center;
+    transition: background 0.2s;
+  }
+  .publish-caret:hover:not(:disabled) { background: #8a0000; }
+  .publish-caret:disabled { opacity: 0.4; cursor: not-allowed; }
+  .publish-dropdown {
+    display: none; position: absolute; right: 0; top: calc(100% + 4px);
+    background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15);
+    min-width: 210px; z-index: 500; flex-direction: column;
+  }
+  .publish-dropdown.open { display: flex; }
+  .publish-dropdown button {
+    background: transparent; border: none; color: var(--text); font-family: var(--font);
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 11px 16px; cursor: pointer; text-align: left; display: flex;
+    align-items: center; gap: 10px; transition: background 0.15s;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .publish-dropdown button:last-child { border-bottom: none; }
+  .publish-dropdown button:hover { background: rgba(255,255,255,0.07); }
+  .publish-dropdown button .drop-icon { font-size: 1rem; flex-shrink: 0; }
+
+  /* ── GitHub commit modal ── */
+  #github-modal-wrap {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8); z-index: 8999;
+    align-items: center; justify-content: center;
+  }
+  #github-modal-wrap.visible { display: flex; }
+  #github-modal {
+    background: #111; border: 1px solid rgba(255,255,255,0.15);
+    width: 480px; max-width: 95vw; padding: 28px 28px 24px;
+  }
+  #github-modal h3 { font-family: var(--font-d); font-weight: 300; font-size: 1.1rem; color: var(--accent); margin-bottom: 6px; }
+  #github-modal p  { color: var(--muted); font-size: 0.72rem; margin-bottom: 20px; }
+  #github-modal .field { margin-bottom: 14px; }
+  #github-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
 
   /* ── Status bar ── */
   .status-bar {
@@ -196,7 +238,7 @@
 <div id="publish-console-wrap">
   <div id="publish-console">
     <div class="console-header">
-      <span class="console-title">▶ netlify deploy --build --prod</span>
+      <span class="console-title" id="console-title">▶ netlify deploy --build --prod</span>
       <button class="console-close" id="console-close-btn" onclick="closeConsole()" title="Close">✕</button>
     </div>
     <div id="console-output"></div>
@@ -237,9 +279,16 @@
       <button class="btn primary" onclick="saveCatalog()" id="save-btn" disabled>
         💾 Save
       </button>
-      <button class="btn publish-btn" onclick="publish()" id="publish-btn" disabled>
-        🚀 Publish
-      </button>
+      <div class="publish-split" id="publish-split">
+        <button class="btn publish-btn" onclick="publish('netlify')" id="publish-btn" disabled>
+          🚀 Publish
+        </button>
+        <button class="publish-caret" id="publish-caret-btn" onclick="togglePublishDropdown()" disabled title="More publish options">▾</button>
+        <div class="publish-dropdown" id="publish-dropdown">
+          <button onclick="publish('netlify');togglePublishDropdown()"><span class="drop-icon">🌐</span> Netlify (build + prod)</button>
+          <button onclick="openGithubModal();togglePublishDropdown()"><span class="drop-icon">🐙</span> GitHub (git push)</button>
+        </div>
+      </div>
     </div>
 
     <!-- ══════════════════════════════════════════════
@@ -418,6 +467,26 @@
   </div><!-- /main -->
 </div><!-- /shell -->
 
+<!-- GitHub commit modal -->
+<div id="github-modal-wrap">
+  <div id="github-modal">
+    <h3>🐙 Publish via GitHub</h3>
+    <p>Saves catalog.js, then runs <code style="color:var(--accent);font-size:0.75rem;">git add · git commit · git push</code> in your project root.</p>
+    <div class="field">
+      <label>Commit Message</label>
+      <input id="github-commit-msg" placeholder="chore: update catalog" value="chore: update catalog" onkeydown="if(event.key==='Enter')confirmGithubPublish()" />
+    </div>
+    <div class="field">
+      <label>Branch <span style="color:var(--muted);font-size:0.62rem;">(leave blank for current branch)</span></label>
+      <input id="github-branch" placeholder="main" />
+    </div>
+    <div id="github-modal-actions">
+      <button class="btn" onclick="closeGithubModal()">Cancel</button>
+      <button class="btn primary" onclick="confirmGithubPublish()">Push to GitHub</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -458,6 +527,7 @@ async function loadCatalogFromServer() {
     setStatus(`catalog.js loaded ✓  (${photos.length} photos)`, 'ok');
     document.getElementById('save-btn').disabled = false;
     document.getElementById('publish-btn').disabled = false;
+    document.getElementById('publish-caret-btn').disabled = false;
   } catch (err) {
     setStatus(`Cannot reach dev server at ${API} — is dev-server.js running?`, 'error');
     toast('Start dev-server.js first: node dev-server.js', true);
@@ -565,16 +635,49 @@ async function saveCatalog() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  PUBLISH
+//  PUBLISH DROPDOWN
 // ═══════════════════════════════════════════════════════════════
-async function publish() {
+function togglePublishDropdown() {
+  const dd = document.getElementById('publish-dropdown');
+  dd.classList.toggle('open');
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  const split = document.getElementById('publish-split');
+  if (split && !split.contains(e.target)) {
+    document.getElementById('publish-dropdown').classList.remove('open');
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+//  GITHUB MODAL
+// ═══════════════════════════════════════════════════════════════
+function openGithubModal() {
+  document.getElementById('github-modal-wrap').classList.add('visible');
+  setTimeout(() => document.getElementById('github-commit-msg').focus(), 50);
+}
+function closeGithubModal() {
+  document.getElementById('github-modal-wrap').classList.remove('visible');
+}
+function confirmGithubPublish() {
+  closeGithubModal();
+  const msg    = document.getElementById('github-commit-msg').value.trim() || 'chore: update catalog';
+  const branch = document.getElementById('github-branch').value.trim();
+  publish('github', { commitMessage: msg, branch });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  PUBLISH  (netlify | github)
+// ═══════════════════════════════════════════════════════════════
+async function publish(target = 'netlify', opts = {}) {
   if (!serverConnected) { toast('Not connected to dev server', true); return; }
 
-  // Save first, then deploy
+  // Save first
   readSiteConfig(); readIntro(); readContact();
   setStatus('Saving before publish…', 'saving');
   document.getElementById('save-btn').disabled = true;
   document.getElementById('publish-btn').disabled = true;
+  document.getElementById('publish-caret-btn').disabled = true;
 
   const code = generateCatalogCode();
   try {
@@ -592,13 +695,23 @@ async function publish() {
     toast('Save failed before publish: ' + err.message, true);
     document.getElementById('save-btn').disabled = false;
     document.getElementById('publish-btn').disabled = false;
+    document.getElementById('publish-caret-btn').disabled = false;
     return;
   }
 
-  // Open console modal and stream deploy
+  // Open console modal
+  const isGithub = target === 'github';
+  document.getElementById('console-title').textContent = isGithub
+    ? '▶ git add · git commit · git push'
+    : '▶ netlify deploy --build --prod';
   openConsole();
 
-  const res = await fetch(`${API}/api/publish`, { method: 'POST' });
+  const endpoint = isGithub ? `${API}/api/publish-github` : `${API}/api/publish`;
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(opts),
+  });
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buf = '';
@@ -619,12 +732,12 @@ async function publish() {
           document.getElementById('console-spinner').style.display = 'none';
           document.getElementById('console-done-btn').style.display = 'inline-block';
           if (exitCode === 0) {
-            document.getElementById('console-status').textContent = '✓ Deploy successful';
-            setStatus('Published successfully ✓', 'ok');
-            toast('🚀 Deployed to production!');
+            document.getElementById('console-status').textContent = isGithub ? '✓ Pushed to GitHub' : '✓ Deploy successful';
+            setStatus(isGithub ? 'Pushed to GitHub ✓' : 'Published successfully ✓', 'ok');
+            toast(isGithub ? '🐙 Pushed to GitHub!' : '🚀 Deployed to production!');
           } else {
-            document.getElementById('console-status').textContent = '✗ Deploy failed';
-            setStatus('Deploy failed — check console', 'error');
+            document.getElementById('console-status').textContent = '✗ ' + (isGithub ? 'Push failed' : 'Deploy failed');
+            setStatus((isGithub ? 'GitHub push' : 'Deploy') + ' failed — check console', 'error');
           }
         }
       } catch {}
@@ -633,6 +746,7 @@ async function publish() {
 
   document.getElementById('save-btn').disabled = false;
   document.getElementById('publish-btn').disabled = false;
+  document.getElementById('publish-caret-btn').disabled = false;
 }
 
 function openConsole() {
