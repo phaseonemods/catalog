@@ -196,12 +196,12 @@ export default function Lightbox({ watch, onClose, watchIndex, total, shopUrl })
           {/* Within-image prev/next arrows — only shown when multiple images exist */}
           {hasMultiple && !isZoomed && (
             <>
-              <button className="lb-img-prev" onClick={(e) => { e.stopPropagation(); prevImg(); }} aria-label="Previous image">
+              <button className="lb-img-prev" onClick={(e) => { e.stopPropagation(); prevImg(); }} onDoubleClick={(e) => e.stopPropagation()} aria-label="Previous image">
                 <svg viewBox="0 0 16 16" fill="none" width="24" height="24">
                   <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
-              <button className="lb-img-next" onClick={(e) => { e.stopPropagation(); nextImg(); }} aria-label="Next image">
+              <button className="lb-img-next" onClick={(e) => { e.stopPropagation(); nextImg(); }} onDoubleClick={(e) => e.stopPropagation()} aria-label="Next image">
                 <svg viewBox="0 0 16 16" fill="none" width="24" height="24">
                   <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>

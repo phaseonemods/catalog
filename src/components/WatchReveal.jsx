@@ -567,7 +567,7 @@ const navBtnStyle = (side, onDark = false) => ({
   top: '50%', transform: 'translateY(-50%)',
   [side]: '10px',
   zIndex: 10,
-  background: 'rgba(0,0,0,0.25)',
+  background: 'transparent',
   border: 'none',
   color: onDark ? '#f0ebe3' : '#0a0a0a',
   fontSize: '2.8rem',
@@ -578,6 +578,11 @@ const navBtnStyle = (side, onDark = false) => ({
   textShadow: onDark ? '0 1px 6px rgba(0,0,0,0.7)' : 'none',
   transition: 'opacity 0.15s',
   borderRadius: '2px',
+
+  appearance: 'none',
+  WebkitAppearance: 'none',
+  boxShadow: 'none'
+
 });
 
 const dotStyle = {

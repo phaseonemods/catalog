@@ -29,6 +29,7 @@ export const INTRO = {
   logoImage: "https://res.cloudinary.com/dbluwfgim/image/upload/v1779780074/landscapeBanner_it9ccy.png",
   logoImages: [
     "https://res.cloudinary.com/dbluwfgim/image/upload/v1779780074/landscapeBanner_it9ccy.png",
+    "https://res.cloudinary.com/dbluwfgim/image/upload/v1779898720/landscapeBanner_Ap_geglbw.png",
   ],
   flashText:       "It's phase one",
   collectionTitle: "ORIGINALS",
@@ -82,7 +83,7 @@ export const CATEGORIES = [
 export const PHOTOS = [
   {
     id: 12,
-    title: "AP x Swatch bracelet",
+    title: "AP x Swatch steel bracelet",
     category: "Strap",
     year: "2026",
     description: {
@@ -120,6 +121,25 @@ export const PHOTOS = [
     thumb: "https://res.cloudinary.com/dbluwfgim/image/upload/v1779779973/onsfM_lcth89.png",
     images: [
       { url: "https://res.cloudinary.com/dbluwfgim/image/upload/v1779779973/onsfM_lcth89.png", caption: "" }
+    ],
+  },
+  {
+    id: 15,
+    title: "AP x Swatch bracelet",
+    category: "Strap",
+    year: "2026",
+    description: {
+      en: "AP x Swatch bioceramic case, rubber strap",
+      th: "สายยางสำหรับ AP x Swatch",
+    },
+    thumb: "https://res.cloudinary.com/dbluwfgim/image/upload/v1779897785/apW_c_k6enu4.png",
+    images: [
+      { url: "https://res.cloudinary.com/dbluwfgim/image/upload/v1779897785/apW_c_k6enu4.png", caption: "" },
+      { url: "https://res.cloudinary.com/dbluwfgim/image/upload/v1779897786/apB_c_gptzf2.png", caption: "" },
+      { url: "https://res.cloudinary.com/dbluwfgim/image/upload/v1779897785/apBu_c_dqdlgg.png", caption: "" },
+      { url: "https://res.cloudinary.com/dbluwfgim/image/upload/v1779897787/apBuS_c_q79aw9.png", caption: "" },
+      { url: "https://res.cloudinary.com/dbluwfgim/image/upload/v1779897785/apR_c_qjzif1.png", caption: "" },
+      { url: "https://res.cloudinary.com/dbluwfgim/image/upload/v1779897785/apY_c_vsvyjc.png", caption: "" }
     ],
   }
 ];
