@@ -45,8 +45,13 @@ const LanguageContext = createContext({
   toggle: () => {},
 });
 
+function detectLang() {
+  const pref = (navigator.language || navigator.languages?.[0] || "en").toLowerCase();
+  return pref.startsWith("th") ? "th" : "en";
+}
+
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState("en");
+  const [lang, setLang] = useState(detectLang);
   const toggle = () => setLang((l) => (l === "en" ? "th" : "en"));
   return (
     <LanguageContext.Provider value={{ lang, t: translations[lang], toggle }}>
