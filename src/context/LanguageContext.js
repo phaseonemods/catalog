@@ -18,6 +18,7 @@ export const translations = {
     filterAll:    "All",
     collection:   "Collection",
     buyNow:       "Buy Now",
+    buyWithEtsy:  "Buy with etsy"
   },
   th: {
     tagline:      SITE_CONFIG.taglineTh,
@@ -34,6 +35,7 @@ export const translations = {
     filterAll:    "ทั้งหมด",
     collection:   "คอลเลกชัน",
     buyNow:       "ซื้อเลย",
+    buyWithEtsy:  "ซื้อด้วย etsy"
   },
 };
 

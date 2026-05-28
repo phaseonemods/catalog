@@ -253,7 +253,7 @@ export default function Lightbox({ watch, onClose, watchIndex, total, shopUrl })
                         <circle cx="13.5" cy="16" r="1" fill="currentColor"/>
                         <path d="M1 2h2.5l.5 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
                       </svg>
-                      {t.buyNow}
+                      {t.buyWithEtsy}
                     </a>
                   )}
 

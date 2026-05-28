@@ -14,7 +14,7 @@ export const SITE_CONFIG = {
   taglineTh: "คอลเลกชั่นนาฬิกา",
 };
 
-export const SHOP_URL = "";
+export const SHOP_URL = "https://www.etsy.com/shop/PhaseOneMods";
 
 
 // ─────────────────────────────────────────────────────────────
